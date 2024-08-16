@@ -1,0 +1,4 @@
+(executable
+ (public_name computope)
+ (name main)
+ (libraries computope))

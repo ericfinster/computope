@@ -1,0 +1,6 @@
+(library
+ (name computope)
+ (public_name computope)
+ (synopsis "Core routines for checking computopes")
+ (libraries base fmt menhirLib sedlex)
+ (preprocess (pps sedlex.ppx ppx_jane)))
