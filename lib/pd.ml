@@ -6,8 +6,8 @@
 
 open Base
     
-type 'a pd =
-  | Br of 'a * ('a * 'a pd) Suite.t
+type 'a t =
+  | Br of 'a * ('a * 'a t) Suite.t
   [@@deriving equal] 
 
 let is_leaf pd =
@@ -150,8 +150,8 @@ let rec nth_source (sph,d) n =
 (*                                   Zipper                                  *)
 (*****************************************************************************)
 
-type 'a pd_ctx = 'a * 'a * ('a * 'a pd) Suite.t * ('a * 'a pd) list
-type 'a pd_zip = 'a pd_ctx Suite.t * 'a pd
+type 'a pd_ctx = 'a * 'a * ('a * 'a t) Suite.t * ('a * 'a t) list
+type 'a pd_zip = 'a pd_ctx Suite.t * 'a t
 
 let visit d (ctx, fcs) =
   match fcs with
@@ -302,7 +302,7 @@ let rec map pd ~f =
     let fm (l, b) = (f l, map b ~f:f) in
     Br (f a, Suite.map brs ~f:fm)
 
-let fold_pd_lvls (pd : 'a pd) ?off:(off=0) (init : 'b)
+let fold_pd_lvls (pd : 'a t) ?off:(off=0) (init : 'b)
     ~f:(f : int -> int -> bool -> 'a -> 'b -> 'b) : 'b =
 
   let k = pd_length pd + off in
@@ -331,8 +331,8 @@ let fold_pd_lf_nd pd init ~lf ~nd =
 let fold_pd pd init ~f =
   fold_pd_lf_nd pd init ~lf:f ~nd:f
 
-let map_with_lvls (pd : 'a pd) (init : int)
-    ~f:(f : int -> int -> bool -> 'a -> 'b) : 'b pd =
+let map_with_lvls (pd : 'a t) (init : int)
+    ~f:(f : int -> int -> bool -> 'a -> 'b) : 'b t =
 
   let k = pd_length pd in
 
@@ -501,7 +501,7 @@ let rec comp_seq s =
 
 let whisk m i n = comp_seq [m;i;n]
 
-let rec pd_to_seq (pd : 'a pd) =
+let rec pd_to_seq (pd : 'a t) =
   let r p = List.map (pd_to_seq p) ~f:(fun n -> n + 1)  in
   match pd with
   | Br(_,Emp) -> [0]

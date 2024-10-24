@@ -90,21 +90,21 @@ let rec fold_right ~init ~f s =
   | Emp -> init 
   | Ext (s',x) -> fold_right s' ~init:(f x init) ~f
 
-(* let rec fold_accum_cont : 'a suite -> 'c -> ('a -> 'c -> 'b * 'c) -> ('b suite -> 'c -> 'd) -> 'd = *)
-(*   fun s c f cont -> *)
-(*   match s with *)
-(*   | Emp -> cont Emp c *)
-(*   | Ext (s',a) -> *)
-(*     fold_accum_cont s' c f (fun s'' c' -> *)
-(*         let (b,c'') = f a c' in *)
-(*         cont (Ext (s'',b)) c'') *)
+let rec fold_accum_cont : 'a suite -> 'c -> ('a -> 'c -> 'b * 'c) -> ('b suite -> 'c -> 'd) -> 'd =
+  fun s c f cont ->
+  match s with
+  | Emp -> cont Emp c
+  | Ext (s',a) ->
+    fold_accum_cont s' c f (fun s'' c' ->
+        let (b,c'') = f a c' in
+        cont (Ext (s'',b)) c'')
 
-(* let rec fold2 s t init f = *)
-(*   match (s,t) with *)
-(*   | (Emp,Emp) -> init *)
-(*   | (Ext (s',x), Ext (t',y)) -> *)
-(*     f (fold2 s' t' init f) x y *)
-(*   | _ -> failwith "unequal length suites" *)
+let rec fold2 s t init f =
+  match (s,t) with
+  | (Emp,Emp) -> init
+  | (Ext (s',x), Ext (t',y)) ->
+    f (fold2 s' t' init f) x y
+  | _ -> invalid_arg "unequal length suites"
 
 let rec append s t =
   match t with
